@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<title>YA.js</title>
+
+</html>
+
+<body>
+  <script src="YA.js"></script>
+  <script>
+    new YA.Element({
+      parent: document.body,
+      content: 'Hello world!',
+      attrs: {
+        class: 'block',
+        style: {
+          fontFamily: 'sans-serif',
+          background: 'black',
+          color: '#fff',
+          padding: '10px'
+        }
+      }
+    });
+
+    new YA.Block({
+      parent: document.body,
+      content: [{
+        content: [{
+          content: 'Element 1'
+          }, {
+          content: 'Element 2'
+          }, {
+          content: 'Element 3'
+          }],
+        attrs: {
+          style: {
+            fontFamily: 'sans-serif',
+            margin: '20px 0 0 0'
+          }
+        }
+      }]
+    })
+  </script>
+</body>
