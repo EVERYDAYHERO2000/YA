@@ -1,6 +1,8 @@
 "use strict";
 
 var YA = window.YA || {};
+YA.__elems = [];
+
 
 /**
  * Создаёт DOM элемент. 
@@ -77,10 +79,15 @@ YA.Element = function (options) {
   }
 
   this.remove = function () {
-    _this.elem.parentNode.removeChild(_this.elem);
+    for(var i =0; i < YA.__elems.length; i++){
+      if (YA.__elems[i].elem !== _this.elem) continue;
+      YA.__elems[i].elem.parentNode.removeChild(YA.__elems[i].elem);
+      YA.__elems.slice(i,1);
+    }
   }
 
   create();
+  YA.__elems.push(this);
   return this;
 }
 
