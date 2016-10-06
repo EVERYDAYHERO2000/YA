@@ -21,24 +21,57 @@ YA.Element = function (options) {
   this.parent = options.parent || null;
   this.tag = options.tag || 'div';
   this.content = options.content || '';
+  this.class = options.class || [];
   this.attrs = options.attrs || {};
   this.events = options.events || {};
 
-  this.setAttr = function (key, val) {
+  this.setClass = function (val) {
+    var newClasses = []
+    if (YA.f.ifExist(val, 'object') && YA.f.ifExist(val[0])) {
 
+      for (var _class = 0; _class < val.length; _class++) {
+        if (!YA.f.ifExist(val[_class])) continue;
+        _this.elem.classList.add(val[_class]);
+        newClasses.push(val[_class]);
+      }
+    } else {
+      if (val.length > 0) {
+        _this.elem.classList.add(val);
+        newClasses.push(val); 
+      }
+    }
+
+    function unique(arr) {
+      var obj = {};
+
+      for (var i = 0; i < arr.length; i++) {
+        var str = arr[i];
+        obj[str] = true;
+      }
+
+      return Object.keys(obj);
+    }
+
+    _this.class = (YA.f.ifExist(_this.class, 'string')) ? [_this.class] : _this.class;
+    _this.class = unique(_this.class.concat(newClasses));
+  }
+
+  this.getClass = function () {
+    return _this.class;
+  }
+
+  this.removeClass = function(c) {
+    _this.elem.classList.remove(c);
+    for (var i=0; i < _this.class.length; i++){
+      if (c === _this.class[i]) _this.class.splice(i,1);
+    }
+  }
+  
+  this.setAttr = function (key, val) {
     switch (key) {
 
     case 'class':
-
-      if (YA.f.ifExist(val, 'object')) {
-        for (var _class = 0; _class < val.length; _class++) {
-          _this.elem.classList.add(val[_class]);
-          _this.attrs[key] = val[_class];
-        }
-      } else {
-        _this.elem.classList.add(val);
-        _this.attrs[key] = val;
-      }
+      _this.setClass(val);
       break;
 
     case 'style':
@@ -68,11 +101,13 @@ YA.Element = function (options) {
   this.getAttr = function (attr) {
     return _this.elem.getAttribute(attr);
   }
-  
+
   this.removeAttr = function (attr) {
     _this.elem.removeAttribute(attr);
+    delete _this.attrs[attr];
   }
-  
+
+
   function create() {
 
     if (YA.f.ifMatch(_this.tag, 'text')) {
@@ -82,9 +117,11 @@ YA.Element = function (options) {
       _this.elem.innerHTML = _this.content;
 
       for (var _attr in _this.attrs) {
-        _this.setAttribute(_attr, _this.attrs[_attr]);
+        _this.setAttr(_attr, _this.attrs[_attr]);
 
       }
+
+      _this.setClass(_this.class);
 
       for (var _event in _this.events) {
         _this.elem.addEventListener(_event, _this.events[_event]);
@@ -180,5 +217,6 @@ YA.f.ifMatch = function (a, b) {
  * @returns {boolean}  true - если существует, false - если нет.
  */
 YA.f.ifExist = function (str, type) {
+
   return (str === undefined || str === null) ? false : ((type !== undefined) ? (typeof str === type) : true);
 };
