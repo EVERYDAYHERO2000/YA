@@ -25,6 +25,14 @@ YA.Element = function (options) {
   this.attrs = options.attrs || {};
   this.events = options.events || {};
 
+  this.setContent = function(html){
+    _this.elem.innerHTML = html;
+  }
+  
+  this.getContent = function(){
+    return _this.elem.innerHTML;
+  }
+  
   this.setClass = function (val) {
     var newClasses = []
     if (YA.f.ifExist(val, 'object') && YA.f.ifExist(val[0])) {
@@ -114,7 +122,7 @@ YA.Element = function (options) {
       _this.elem = document.createTextNode(_this.content);
     } else {
       _this.elem = document.createElementNS ? document.createElementNS(_this.namespace, _this.tag) : document.createElement(_this.tag);
-      _this.elem.innerHTML = _this.content;
+      _this.setContent(_this.content);
 
       for (var _attr in _this.attrs) {
         _this.setAttr(_attr, _this.attrs[_attr]);
