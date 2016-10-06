@@ -10,7 +10,7 @@
     new YA.Element({
       parent: document.body,
       content: 'Hello world!',
-      class: 'block',
+      class: ['block','dfdfd'],
       attrs: {
         style: {
           fontFamily: 'sans-serif',
@@ -18,7 +18,11 @@
           color: '#fff',
           padding: '10px'
         }
-      }
+      },
+      events : {
+        click : function(e){
+        console.log(_this)
+      }}
     });
 
     new YA.Block({
@@ -31,11 +35,14 @@
           }, {
             content: 'Element 3'
           }, {
-            tag : 'a',
+            tag : 'span',
             content : 'Element link',
             attrs: {
-              href: '#',
-              class: 'link'
+            },
+            events: {
+              click: function(e){
+                console.log(this)
+              }
             }
           }],
         attrs: {

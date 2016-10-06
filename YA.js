@@ -24,7 +24,6 @@ YA.Element = function (options) {
   this.class = options.class || [];
   this.attrs = options.attrs || {};
   this.events = options.events || {};
-
   this.setContent = function(html){
     _this.elem.innerHTML = html;
   }
