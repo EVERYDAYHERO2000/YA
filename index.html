@@ -10,7 +10,7 @@
     new YA.Element({
       parent: document.body,
       content: 'Hello world!',
-      class: ['block','dfdfd'],
+      class: ['block', 'dfdfd'],
       attrs: {
         style: {
           fontFamily: 'sans-serif',
@@ -19,38 +19,51 @@
           padding: '10px'
         }
       },
-      events : {
-        click : function(e){
-        console.log(_this)
-      }}
+      events: {
+        click: function (e) {
+          console.log(_this)
+        }
+      }
     });
+
+
 
     new YA.Block({
       parent: document.body,
-      content: [{
-        content: [{
-          content: 'Element 1'
-          }, {
+      content: [
+        {
+          content: [{
+
+            content: 'dddd'
+          }, new YA.Element({
+              content: 'dddddd',
+              attrs: {
+                style: {
+                  background: 'red'
+                }
+              }
+            }).__proto, {
+
             content: 'Element 2'
           }, {
+
             content: 'Element 3'
           }, {
-            tag : 'span',
-            content : 'Element link',
-            attrs: {
-            },
+            tag: 'span',
+            content: 'Element link',
+            attrs: {},
             events: {
-              click: function(e){
+              click: function (e) {
                 console.log(this)
               }
             }
           }],
-        attrs: {
-          style: {
-            fontFamily: 'sans-serif',
-            margin: '20px 0 0 0'
+          attrs: {
+            style: {
+              fontFamily: 'sans-serif',
+              margin: '20px 0 0 0'
+            }
           }
-        }
       }]
     })
   </script>

@@ -2,172 +2,187 @@
 
 var YA = window.YA || {};
 YA.__elems = [];
+YA.__events = [];
+YA.__blocks = [];
 
 
 /**
  * Создаёт DOM элемент. 
- * @param   {object} settings 
+ * @param   {object} options 
  *                   {object} parent : родитель(по умолчанию body), если не задан родитель функция вернет DOM элемент без добавления в html 
  *                   {string} tag : html tag(по умолчанию div) или text для createTextNode(), по умолчанию div
  *                   {string} content : содержимое, строка,
  *                   {object} attrs : объект с атрибутами {название атрибута : значение} 
  * @returns {object} Возвращает DOM элемент
  */
-YA.Element = function (options) {
+YA.Element = function (options, callback) {
+  options.namespace = options.namespace || 'http://www.w3.org/1999/xhtml';
+  options.tag = options.tag || 'div';
+
+  
+  this.__proto = options;
+  
   var _this = this;
 
-  this.namespace = options.namespace || 'http://www.w3.org/1999/xhtml';
-  this.elem = null;
-  this.parent = options.parent || null;
-  this.tag = options.tag || 'div';
-  this.content = options.content || '';
-  this.class = options.class || [];
-  this.attrs = options.attrs || {};
-  this.events = options.events || {};
-  this.setContent = function(html){
-    _this.elem.innerHTML = html;
-  }
-  
-  this.getContent = function(){
-    return _this.elem.innerHTML;
-  }
-  
-  this.setClass = function (val) {
-    var newClasses = []
-    if (YA.f.ifExist(val, 'object') && YA.f.ifExist(val[0])) {
+  this.namespace = function () {
+    return options.namespace;
+  };
 
-      for (var _class = 0; _class < val.length; _class++) {
-        if (!YA.f.ifExist(val[_class])) continue;
-        _this.elem.classList.add(val[_class]);
-        newClasses.push(val[_class]);
-      }
-    } else {
-      if (val.length > 0) {
-        _this.elem.classList.add(val);
-        newClasses.push(val); 
-      }
-    }
+  this.elem = function () {
+    return options.elem;
+  };
 
-    function unique(arr) {
-      var obj = {};
+  this.parent = function () {
+    return options.parent;
+  };
 
-      for (var i = 0; i < arr.length; i++) {
-        var str = arr[i];
-        obj[str] = true;
-      }
+  this.tag = function () {
+    return options.tag;
+  };
 
-      return Object.keys(obj);
-    }
-
-    _this.class = (YA.f.ifExist(_this.class, 'string')) ? [_this.class] : _this.class;
-    _this.class = unique(_this.class.concat(newClasses));
+  this.content = function (value) {
+    return (value) ? options.elem.innerHTML = options.content = value : options.elem.innerHTML;
   }
 
-  this.getClass = function () {
-    return _this.class;
+  this.removeContent = function () {
+    return options.elem.innerHTML = options.content = '';
   }
 
-  this.removeClass = function(c) {
-    _this.elem.classList.remove(c);
-    for (var i=0; i < _this.class.length; i++){
-      if (c === _this.class[i]) _this.class.splice(i,1);
-    }
-  }
-  
-  this.setAttr = function (key, val) {
-    switch (key) {
+  this.class = function (val) {
+    if (val) {
+      var newClasses = []
+      if (YA.f.ifExist(val, 'object') && YA.f.ifExist(val[0])) {
 
-    case 'class':
-      _this.setClass(val);
-      break;
-
-    case 'style':
-      if (YA.f.ifExist(val, 'object')) {
-        for (var _style in val) {
-          if (YA.f.ifExist(val[_style])) {
-            _this.elem.style[_style] = val[_style];
-            _this.attrs[key][_style] = val[_style];
-          }
+        for (var _class = 0; _class < val.length; _class++) {
+          if (!YA.f.ifExist(val[_class])) continue;
+          options.elem.classList.add(val[_class]);
+          newClasses.push(val[_class]);
         }
       } else {
-        _this.elem.setAttribute('style', val);
-        _this.attrs[key] = val;
+        if (val.length > 0) {
+          options.elem.classList.add(val);
+          newClasses.push(val);
+        }
       }
-      break;
 
-    default:
-      if (YA.f.ifExist(val)) {
-        _this.elem.setAttribute(key, val);
-        _this.attrs[key] = val;
+      options.class = (YA.f.ifExist(options.class, 'string')) ? [options.class] : options.class;
 
-      }
-      break;
+      if (!options.class) options.class = [];
+      options.class = function (arr) {
+        var obj = {};
+
+        for (var i = 0; i < arr.length; i++) {
+          obj[arr[i]] = true;
+        }
+
+        return Object.keys(obj);
+      }(options.class.concat(newClasses));
+    }
+
+    return options.class;
+  };
+
+  this.removeClass = function (value) {
+    options.elem.classList.remove(value);
+    for (var i = 0; i < options.class.length; i++) {
+      if (value === options.class[i]) options.class.splice(i, 1);
     }
   }
 
-  this.getAttr = function (attr) {
-    return _this.elem.getAttribute(attr);
-  }
+  this.attrs = function (key, val) {
 
-  this.removeAttr = function (attr) {
-    _this.elem.removeAttribute(attr);
-    delete _this.attrs[attr];
-  }
+    if (val) {
+      switch (key) {
 
+      case 'style':
+        if (YA.f.ifExist(val, 'object')) {
+          for (var _style in val) {
+            if (YA.f.ifExist(val[_style])) {
+              options.elem.style[_style] = val[_style];
+              options.attrs[key][_style] = val[_style];
+            }
+          }
+        } else {
+          options.elem.setAttribute('style', val);
+          options.attrs[key] = val;
+        }
+        break;
 
-  function create() {
-
-    if (YA.f.ifMatch(_this.tag, 'text')) {
-      _this.elem = document.createTextNode(_this.content);
-    } else {
-      _this.elem = document.createElementNS ? document.createElementNS(_this.namespace, _this.tag) : document.createElement(_this.tag);
-      _this.setContent(_this.content);
-
-      for (var _attr in _this.attrs) {
-        _this.setAttr(_attr, _this.attrs[_attr]);
-
-      }
-
-      _this.setClass(_this.class);
-
-      for (var _event in _this.events) {
-        _this.elem.addEventListener(_event, _this.events[_event]);
+      default:
+        if (YA.f.ifExist(val)) {
+          options.elem.setAttribute(key, val);
+          options.attrs[key] = val;
+        }
+        break;
       }
     }
 
-
-    if (YA.f.ifHtml(options.parent)) {
-      options.parent = (YA.f.ifMatch(options.parent.nodeName, '#text')) ? options.parent.parentNode : options.parent;
-
-      options.parent.appendChild(_this.elem);
-    }
+    return options.attrs;
+  };
+  
+  this.removeAttr = function(key){
+    options.elem.removeAttribute(key);
+    delete options.attrs[key];
   }
+
+  this.events = function (e, f) {
+    if (f) {
+      options.elem.addEventListener(e, f);
+    }
+  };
 
   this.remove = function () {
     for (var i = 0; i < YA.__elems.length; i++) {
-      if (YA.__elems[i].elem !== _this.elem) continue;
-      YA.__elems[i].elem.parentNode.removeChild(YA.__elems[i].elem);
-      YA.__elems.slice(i, 1);
+      if (YA.__elems[i].elem() !== _this.elem()) continue;
+      YA.__elems[i].elem().parentNode.removeChild(YA.__elems[i].elem());
+      YA.__elems.splice(i, 1);
+    }
+  }
+
+  function create() {
+
+    if (YA.f.ifMatch(options.tag, 'text')) {
+      options.elem = document.createTextNode(options.content || '');
+    } else {
+      options.elem = document.createElementNS ? document.createElementNS(options.namespace, options.tag) : document.createElement(options.tag);
+      _this.content(options.content || '');
+
+      for (var _attr in options.attrs) {
+        _this.attrs(_attr, options.attrs[_attr]);
+
+      }
+
+      _this.class(options.class);
+
+      for (var _event in options.events) {
+        _this.events(_event, options.events[_event])
+      }
+    }
+
+    if (YA.f.ifHtml(options.parent)) {
+      options.parent = (YA.f.ifMatch(options.parent.nodeName, '#text')) ? options.parent.parentNode : options.parent;
+      options.parent.appendChild(options.elem);
+      YA.__elems.push(_this);
     }
   }
 
   create();
-  YA.__elems.push(this);
+  if (callback) callback(this);
   return this;
 }
 
-YA.Block = function (obj) {
-  var _this = this,
-    _hidden = {};
-  this.tree = obj;
+
+YA.Block = function (obj, callback) {
+  var _this = this;
+  this.__proto = obj;
   this.elem = null;
 
-  _hidden.create = function (parent, obj) {
+  function create(parent, obj) {
 
     for (var _elem = 0; _elem < obj.length; _elem++) {
 
       var _ifNode = YA.f.ifExist(obj[_elem].content, 'object');
-
+      
       var element = new YA.Element({
         namespace: obj[_elem].namespace || null,
         parent: parent || null,
@@ -177,13 +192,39 @@ YA.Block = function (obj) {
         content: _ifNode ? null : obj[_elem].content
       });
 
+      obj[_elem].elem = element.elem();
       if (!_this.elem) _this.elem = element.elem;
-
-      if (_ifNode) _hidden.create(element.elem, obj[_elem].content);
+      
+      if (_ifNode) create(element.elem(), obj[_elem].content);
     }
 
   }
-  _hidden.create(obj.parent, obj.content);
+  
+  
+  this.remove = function(){
+    var tempTree;
+    for (var i = 0; i < YA.__blocks.length; i++) {
+      if (YA.__blocks[i].elem() !== _this.elem()) continue;
+      tempTree = YA.__blocks[i].__proto;
+      YA.__blocks.splice(i, 1);
+    }
+    
+    function removeTree(obj){
+      for (var _elem = 0; _elem < obj.length; _elem++) {
+        var _ifNode = YA.f.ifExist(obj[_elem].content, 'object');
+        for (var i = 0; i < YA.__elems.length; i++) {
+          if (obj[_elem].elem !== YA.__elems[i].elem() ) continue;
+          YA.__elems[i].remove();
+        }
+        if (_ifNode) removeTree(obj[_elem].content);
+      }
+    } 
+    removeTree(tempTree.content);
+  }
+  
+  create(obj.parent, obj.content);
+  YA.__blocks.push(this);
+  if (callback) callback(this);
   return this;
 
 }
