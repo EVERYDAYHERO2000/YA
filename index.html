@@ -21,7 +21,7 @@
       },
       events: {
         click: function (e) {
-          console.log(_this)
+          console.log(e)
         }
       }
     }, function(e){
@@ -72,5 +72,25 @@
           }
       }]
     })
+    
+    new YA.Block({
+      parent: document.body,
+      content: function(){
+        var arr = [];
+        for (var i=0; i < 10; i++){
+          arr.push({
+            content : i,
+            events : {
+              click : function(e){
+                console.log(e.target)
+              }
+            }
+          });
+        }
+        return arr;
+      }()
+    })
+    
+    
   </script>
 </body>

@@ -6,17 +6,18 @@ YA.__events = [];
 YA.__blocks = [];
 
 /**
- * Создает Элемент. Если задан options.parent добавляет объект в массив YA.__elems и создаёт DOM элемент в родителе.
- * @param   {object}   options  Объект, прототип элемента
+ * Создает Элемент. Если задан proto.parent добавляет объект в массив YA.__elems и создаёт DOM элемент в родителе.
+ * @param   {object}   proto  Объект, прототип элемента
  * @param   {function} callback В качестве аргумента получает созданный объект
  * @returns {object} Возвращает объект
  */
-YA.Element = function (options, callback) {
-  options.namespace = options.namespace || 'http://www.w3.org/1999/xhtml';
-  options.tag = options.tag || 'div';
+YA.Element = function (proto, callback) {
+  proto.namespace = proto.namespace || 'http://www.w3.org/1999/xhtml';
+  proto.tag = proto.tag || 'div';
 
-  this.__proto = options;
-  
+  this.__proto = proto;
+  this.__events = {};
+  this.__id = proto.id;
   var _this = this;
 
   /**
@@ -24,7 +25,7 @@ YA.Element = function (options, callback) {
    * @returns {string} 
    */
   this.namespace = function () {
-    return options.namespace;
+    return proto.namespace;
   };
 
   /**
@@ -32,7 +33,7 @@ YA.Element = function (options, callback) {
    * @returns {object}
    */
   this.elem = function () {
-    return options.elem;
+    return proto.elem;
   };
 
   /**
@@ -40,7 +41,7 @@ YA.Element = function (options, callback) {
    * @returns {object}
    */
   this.parent = function () {
-    return options.parent;
+    return proto.parent;
   };
 
   /**
@@ -48,7 +49,7 @@ YA.Element = function (options, callback) {
    * @returns {string}
    */
   this.tag = function () {
-    return options.tag;
+    return proto.tag;
   };
 
   /**
@@ -57,7 +58,7 @@ YA.Element = function (options, callback) {
    * @returns {string} Содержимое элемента 
    */
   this.content = function (value) {
-    return (value) ? options.elem.innerHTML = options.content = value : options.elem.innerHTML;
+    return (value) ? proto.elem.innerHTML = proto.content = value : proto.elem.innerHTML;
   }
 
   /**
@@ -65,30 +66,36 @@ YA.Element = function (options, callback) {
    * @returns {string} возвращает пустую строку
    */
   this.removeContent = function () {
-    return options.elem.innerHTML = options.content = '';
+    return proto.elem.innerHTML = proto.content = '';
   }
 
-  this.class = function (val) {
-    if (val) {
+  /**
+   * С аргументом функция добавляет новый css class, без аргумента возвращает массив с класами.
+   * @param   {Array} value Массив или строку с именами класов
+   * @returns {Array} Массив с класами.
+   */
+  this.class = function (value) {
+    if (value) {
       var newClasses = []
-      if (YA.f.ifExist(val, 'object') && YA.f.ifExist(val[0])) {
+      if (YA.f.ifExist(value, 'object') && YA.f.ifExist(value[0])) {
 
-        for (var _class = 0; _class < val.length; _class++) {
-          if (!YA.f.ifExist(val[_class])) continue;
-          options.elem.classList.add(val[_class]);
-          newClasses.push(val[_class]);
+        for (var _class = 0; _class < value.length; _class++) {
+          if (!YA.f.ifExist(value[_class])) continue;
+          proto.elem.classList.add(value[_class]);
+          newClasses.push(value[_class]);
         }
       } else {
-        if (val.length > 0) {
-          options.elem.classList.add(val);
-          newClasses.push(val);
+        if (value.length > 0) {
+          proto.elem.classList.add(value);
+          newClasses.push(value);
         }
       }
 
-      options.class = (YA.f.ifExist(options.class, 'string')) ? [options.class] : options.class;
+      proto.class = (YA.f.ifExist(proto.class, 'string')) ? [proto.class] : proto.class;
 
-      if (!options.class) options.class = [];
-      options.class = function (arr) {
+      if (!proto.class) proto.class = [];
+      
+      proto.class = function (arr) {
         var obj = {};
 
         for (var i = 0; i < arr.length; i++) {
@@ -96,10 +103,10 @@ YA.Element = function (options, callback) {
         }
 
         return Object.keys(obj);
-      }(options.class.concat(newClasses));
+      }(proto.class.concat(newClasses));
     }
 
-    return options.class;
+    return proto.class;
   };
 
   /**
@@ -107,9 +114,9 @@ YA.Element = function (options, callback) {
    * @param {string} value Название класса
    */
   this.removeClass = function (value) {
-    options.elem.classList.remove(value);
-    for (var i = 0; i < options.class.length; i++) {
-      if (value === options.class[i]) options.class.splice(i, 1);
+    proto.elem.classList.remove(value);
+    for (var i = 0; i < proto.class.length; i++) {
+      if (value === proto.class[i]) proto.class.splice(i, 1);
     }
   }
 
@@ -128,44 +135,67 @@ YA.Element = function (options, callback) {
         if (YA.f.ifExist(value, 'object')) {
           for (var _style in value) {
             if (YA.f.ifExist(value[_style])) {
-              options.elem.style[_style] = value[_style];
-              options.attrs[key][_style] = value[_style];
+              proto.elem.style[_style] = value[_style];
+              proto.attrs[key][_style] = value[_style];
             }
           }
         } else {
-          options.elem.setAttribute('style', value);
-          options.attrs[key] = value;
+          proto.elem.setAttribute('style', value);
+          proto.attrs[key] = value;
         }
         break;
 
       default:
         if (YA.f.ifExist(value)) {
-          options.elem.setAttribute(key, value);
-          options.attrs[key] = value;
+          proto.elem.setAttribute(key, value);
+          proto.attrs[key] = value;
         }
         break;
       }
     }
 
-    return options.attrs;
+    return proto.attrs;
   };
-  
+
   /**
    * Удаляет атрибут по имени.
    * @param   {string}   key имя атрибута
    * @returns {object} Возвращает объект с атрибутами элемента
    */
-  this.removeAttr = function(key){
-    options.elem.removeAttribute(key);
-    delete options.attrs[key];
-    return options.attrs;
+  this.removeAttr = function (key) {
+    proto.elem.removeAttribute(key);
+    delete proto.attrs[key];
+    return proto.attrs;
   }
 
   this.events = function (e, f) {
     if (f) {
-      options.elem.addEventListener(e, f);
+      proto.elem.addEventListener(e, f);
+      _this.__events[e] = f;
+      YA.__events.push({
+        target: _this.elem(),
+        event: e,
+        f: f
+      });
     }
+    return _this.__events;
   };
+
+  /**
+   * Удаляет ссылки на соботие из YA.__events и из this.__events. Удаляет событие
+   * @param   {string} e Название события которое нужно удалить
+   * @returns {Array} this.__events
+   */
+  this.removeEvent = function (e) {
+    for (var i = 0; i < YA.__events.length; i++) {
+      if (YA.__events[i].target === _this.elem() && YA.__events[i].f === _this.__events[e]) {
+        YA.__events.splice(i, 1);
+      }
+    }
+    _this.elem().removeEventListener(e, _this.__events[e]);
+    delete _this.__events[e];
+    return _this.__events;
+  }
 
   /**
    * Удаляет элемент из массива YA.__elems и из DOM. 
@@ -183,27 +213,27 @@ YA.Element = function (options, callback) {
    */
   function create() {
 
-    if (YA.f.ifMatch(options.tag, 'text')) {
-      options.elem = document.createTextNode(options.content || '');
+    if (YA.f.ifMatch(proto.tag, 'text')) {
+      proto.elem = document.createTextNode(proto.content || '');
     } else {
-      options.elem = document.createElementNS ? document.createElementNS(options.namespace, options.tag) : document.createElement(options.tag);
-      _this.content(options.content || '');
+      proto.elem = document.createElementNS ? document.createElementNS(proto.namespace, proto.tag) : document.createElement(proto.tag);
+      _this.content(proto.content || '');
 
-      for (var _attr in options.attrs) {
-        _this.attrs(_attr, options.attrs[_attr]);
+      for (var _attr in proto.attrs) {
+        _this.attrs(_attr, proto.attrs[_attr]);
 
       }
 
-      _this.class(options.class);
+      _this.class(proto.class);
 
-      for (var _event in options.events) {
-        _this.events(_event, options.events[_event])
+      for (var _event in proto.events) {
+        _this.events(_event, proto.events[_event])
       }
     }
 
-    if (YA.f.ifHtml(options.parent)) {
-      options.parent = (YA.f.ifMatch(options.parent.nodeName, '#text')) ? options.parent.parentNode : options.parent;
-      options.parent.appendChild(options.elem);
+    if (YA.f.ifHtml(proto.parent)) {
+      proto.parent = (YA.f.ifMatch(proto.parent.nodeName, '#text')) ? proto.parent.parentNode : proto.parent;
+      proto.parent.appendChild(proto.elem);
       YA.__elems.push(_this);
     }
   }
@@ -214,69 +244,70 @@ YA.Element = function (options, callback) {
 }
 
 /**
- * Создает Блок, набор элементов. Если задан options.parent добавляет объект в массив YA.__blocks и создаёт DOM элементы в родителе.
- * @param   {object}   obj      Конструкия описывающая блок из набора элементов.
+ * Создает Блок, набор элементов. Если задан proto.parent добавляет объект в массив YA.__blocks и создаёт DOM элементы в родителе.
+ * @param   {object}   proto     Конструкия описывающая блок из набора элементов.
  * @param   {object} callback Функция в качестве аргумента получает объект с корневым DOM элементом
  * @returns {object} возвращает объект
  */
-YA.Block = function (obj, callback) {
+YA.Block = function (proto, callback) {
   var _this = this;
-  this.__proto = obj;
+  this.__proto = proto;
+  this.__id = proto.id;
   this.elem = null;
 
   /**
    * Создаёт блок. Не доступна из конструктора. 
    * @param {object} ссылка на родителя
-   * @param {object} obj    Объект с описанием свойств элемента
+   * @param {object} proto    Объект с описанием свойств элемента
    */
-  function create(parent, obj) {
+  function create(parent, proto) {
 
-    for (var _elem = 0; _elem < obj.length; _elem++) {
+    for (var _elem = 0; _elem < proto.length; _elem++) {
 
-      var _ifNode = YA.f.ifExist(obj[_elem].content, 'object');
-      
+      var _ifNode = YA.f.ifExist(proto[_elem].content, 'object');
+
       var element = new YA.Element({
-        namespace: obj[_elem].namespace || null,
+        namespace: proto[_elem].namespace || null,
         parent: parent || null,
-        tag: obj[_elem].tag || null,
-        attrs: obj[_elem].attrs || null,
-        events: obj[_elem].events || null,
-        content: _ifNode ? null : obj[_elem].content
+        tag: proto[_elem].tag || null,
+        attrs: proto[_elem].attrs || null,
+        events: proto[_elem].events || null,
+        content: _ifNode ? null : proto[_elem].content
       });
 
-      obj[_elem].elem = element.elem();
+      proto[_elem].elem = element.elem();
       if (!_this.elem) _this.elem = element.elem;
-      
-      if (_ifNode) create(element.elem(), obj[_elem].content);
+
+      if (_ifNode) create(element.elem(), proto[_elem].content);
     }
 
   }
-  
+
   /**
    * Удаляет блок из массива YA.__blocks и из DOM, удаляет все вложенные элементы из YA.__elems 
    */
-  this.remove = function(){
+  this.remove = function () {
     var tempTree;
     for (var i = 0; i < YA.__blocks.length; i++) {
       if (YA.__blocks[i].elem() !== _this.elem()) continue;
       tempTree = YA.__blocks[i].__proto;
       YA.__blocks.splice(i, 1);
     }
-    
-    function removeTree(obj){
-      for (var _elem = 0; _elem < obj.length; _elem++) {
-        var _ifNode = YA.f.ifExist(obj[_elem].content, 'object');
+
+    function removeTree(proto) {
+      for (var _elem = 0; _elem < proto.length; _elem++) {
+        var _ifNode = YA.f.ifExist(proto[_elem].content, 'object');
         for (var i = 0; i < YA.__elems.length; i++) {
-          if (obj[_elem].elem !== YA.__elems[i].elem() ) continue;
+          if (proto[_elem].elem !== YA.__elems[i].elem()) continue;
           YA.__elems[i].remove();
         }
-        if (_ifNode) removeTree(obj[_elem].content);
+        if (_ifNode) removeTree(proto[_elem].content);
       }
-    } 
+    }
     removeTree(tempTree.content);
   }
-  
-  create(obj.parent, obj.content);
+
+  create(proto.parent, proto.content);
   YA.__blocks.push(this);
   if (callback) callback(this);
   return this;
