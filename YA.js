@@ -5,45 +5,65 @@ YA.__elems = [];
 YA.__events = [];
 YA.__blocks = [];
 
-
 /**
- * Создаёт DOM элемент. 
- * @param   {object} options 
- *                   {object} parent : родитель(по умолчанию body), если не задан родитель функция вернет DOM элемент без добавления в html 
- *                   {string} tag : html tag(по умолчанию div) или text для createTextNode(), по умолчанию div
- *                   {string} content : содержимое, строка,
- *                   {object} attrs : объект с атрибутами {название атрибута : значение} 
- * @returns {object} Возвращает DOM элемент
+ * Создает Элемент. Если задан options.parent добавляет объект в массив YA.__elems и создаёт DOM элемент в родителе.
+ * @param   {object}   options  Объект, прототип элемента
+ * @param   {function} callback В качестве аргумента получает созданный объект
+ * @returns {object} Возвращает объект
  */
 YA.Element = function (options, callback) {
   options.namespace = options.namespace || 'http://www.w3.org/1999/xhtml';
   options.tag = options.tag || 'div';
 
-  
   this.__proto = options;
   
   var _this = this;
 
+  /**
+   * Возвращает пространство имён
+   * @returns {string} 
+   */
   this.namespace = function () {
     return options.namespace;
   };
 
+  /**
+   * Возвращает DOM элемент
+   * @returns {object}
+   */
   this.elem = function () {
     return options.elem;
   };
 
+  /**
+   * Возвращает DOM элемент родителя
+   * @returns {object}
+   */
   this.parent = function () {
     return options.parent;
   };
 
+  /**
+   * Возвращает tag элемента
+   * @returns {string}
+   */
   this.tag = function () {
     return options.tag;
   };
 
+  /**
+   * С аргументов устанавливает содержимое элемента, без аргумента возвращает содержимое элемента.
+   * @param   {string} value строка, может содержать html символы. 
+   * @returns {string} Содержимое элемента 
+   */
   this.content = function (value) {
     return (value) ? options.elem.innerHTML = options.content = value : options.elem.innerHTML;
   }
 
+  /**
+   * Удаляет контент, содержимое элемента
+   * @returns {string} возвращает пустую строку
+   */
   this.removeContent = function () {
     return options.elem.innerHTML = options.content = '';
   }
@@ -82,6 +102,10 @@ YA.Element = function (options, callback) {
     return options.class;
   };
 
+  /**
+   * Удаляет css класс
+   * @param {string} value Название класса
+   */
   this.removeClass = function (value) {
     options.elem.classList.remove(value);
     for (var i = 0; i < options.class.length; i++) {
@@ -89,29 +113,35 @@ YA.Element = function (options, callback) {
     }
   }
 
-  this.attrs = function (key, val) {
+  /**
+   * Если задан атрибут value создает новый атрибут для элемента. Если задан только key возвращает значение атрибута.
+   * @param   {string} key Имя атрибута
+   * @param   {object} value Объект или строка со значением атрибута. Объект в случии атрибута style
+   * @returns {object} возвращает список всех атрибутов элемента
+   */
+  this.attrs = function (key, value) {
 
-    if (val) {
+    if (value) {
       switch (key) {
 
       case 'style':
-        if (YA.f.ifExist(val, 'object')) {
-          for (var _style in val) {
-            if (YA.f.ifExist(val[_style])) {
-              options.elem.style[_style] = val[_style];
-              options.attrs[key][_style] = val[_style];
+        if (YA.f.ifExist(value, 'object')) {
+          for (var _style in value) {
+            if (YA.f.ifExist(value[_style])) {
+              options.elem.style[_style] = value[_style];
+              options.attrs[key][_style] = value[_style];
             }
           }
         } else {
-          options.elem.setAttribute('style', val);
-          options.attrs[key] = val;
+          options.elem.setAttribute('style', value);
+          options.attrs[key] = value;
         }
         break;
 
       default:
-        if (YA.f.ifExist(val)) {
-          options.elem.setAttribute(key, val);
-          options.attrs[key] = val;
+        if (YA.f.ifExist(value)) {
+          options.elem.setAttribute(key, value);
+          options.attrs[key] = value;
         }
         break;
       }
@@ -120,9 +150,15 @@ YA.Element = function (options, callback) {
     return options.attrs;
   };
   
+  /**
+   * Удаляет атрибут по имени.
+   * @param   {string}   key имя атрибута
+   * @returns {object} Возвращает объект с атрибутами элемента
+   */
   this.removeAttr = function(key){
     options.elem.removeAttribute(key);
     delete options.attrs[key];
+    return options.attrs;
   }
 
   this.events = function (e, f) {
@@ -131,6 +167,9 @@ YA.Element = function (options, callback) {
     }
   };
 
+  /**
+   * Удаляет элемент из массива YA.__elems и из DOM. 
+   */
   this.remove = function () {
     for (var i = 0; i < YA.__elems.length; i++) {
       if (YA.__elems[i].elem() !== _this.elem()) continue;
@@ -139,6 +178,9 @@ YA.Element = function (options, callback) {
     }
   }
 
+  /**
+   * Создаёт элемент. Не доступна из конструктора. 
+   */
   function create() {
 
     if (YA.f.ifMatch(options.tag, 'text')) {
@@ -171,12 +213,22 @@ YA.Element = function (options, callback) {
   return this;
 }
 
-
+/**
+ * Создает Блок, набор элементов. Если задан options.parent добавляет объект в массив YA.__blocks и создаёт DOM элементы в родителе.
+ * @param   {object}   obj      Конструкия описывающая блок из набора элементов.
+ * @param   {object} callback Функция в качестве аргумента получает объект с корневым DOM элементом
+ * @returns {object} возвращает объект
+ */
 YA.Block = function (obj, callback) {
   var _this = this;
   this.__proto = obj;
   this.elem = null;
 
+  /**
+   * Создаёт блок. Не доступна из конструктора. 
+   * @param {object} ссылка на родителя
+   * @param {object} obj    Объект с описанием свойств элемента
+   */
   function create(parent, obj) {
 
     for (var _elem = 0; _elem < obj.length; _elem++) {
@@ -200,7 +252,9 @@ YA.Block = function (obj, callback) {
 
   }
   
-  
+  /**
+   * Удаляет блок из массива YA.__blocks и из DOM, удаляет все вложенные элементы из YA.__elems 
+   */
   this.remove = function(){
     var tempTree;
     for (var i = 0; i < YA.__blocks.length; i++) {

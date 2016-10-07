@@ -24,9 +24,15 @@
           console.log(_this)
         }
       }
+    }, function(e){
+      console.log(e)
     });
 
-
+    new YA.Element({
+      parent : YA.__elems[0].elem(),
+      tag : 'text',
+      content : '!!!!!!'
+    });
 
     new YA.Block({
       parent: document.body,
