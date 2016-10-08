@@ -60,6 +60,9 @@
 		<a href="http://newsite.com" class="blockname__link">Ссылка</a>
 	</div>
     
+https://aralinilya.github.io/YA/
+
+    
 Элементы доступны в массиве YA.__elems а вся конструкция в массиве YA.__block. Все события доступны в YA.__events
 
 Аргументы функции подстановки шаблона YA.__(proto, mix, inner, callback);
