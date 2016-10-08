@@ -1,18 +1,44 @@
 # YA
-шаблонизатор
+Шаблонизатор html
 
-<
-new YA.Document({
-      parent: document.body,
-      content:[
-        YA.__(blockname,{}, [
-          YA.__(blockname,{})
-        ]),
-        YA.__(blockname,{}),
-        YA.__(blockname,{}, [
-          YA.__(blockname,{})
-        ])
-      ]
-})
->
+### Описание
+Объявление шаблонов:
+
+    var block = {
+        tag : 'div',
+        class : ['blockname','blockname_mix'],
+        attrs : {
+            style : {
+                background : '#000000',
+                color : '#ffffff'
+            }
+        },
+        events : {
+            'click' : function(e){}
+        }
+    }
+    
+    var link = {
+      tag : 'a',
+      class : ['blockname__link'],
+      attrs : {
+          href : 'http://site.com'
+      }
+    }
+
+
+Инициализация шаблонов:
+
+    new YA.Document({
+        parent: document.body,
+        content:[
+            YA.__(block,{}, [
+                YA.__(link,{})
+            ]),
+            YA.__(block, {attrs: { style : { margin:'50px' } } }),
+            YA.__(block,{}, [
+                YA.__(link,{attrs: { href : 'http://newsite.com' } })
+            ])
+        ]
+    })
 
