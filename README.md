@@ -1,5 +1,6 @@
 # YA 
-Шаблонизатор html
+Шаблонизатор html 
+пример: https://aralinilya.github.io/YA/
 
 ### Описание
 Объявление шаблонов:
@@ -59,8 +60,6 @@
 	<div class="blockname blockname_mix" style="color: rgb(255, 255, 255); padding: 50px; background: rgb(0, 0, 0);">
 		<a href="http://newsite.com" class="blockname__link">Ссылка</a>
 	</div>
-    
-https://aralinilya.github.io/YA/
 
     
 Элементы доступны в массиве YA.__elems а вся конструкция в массиве YA.__block. Все события доступны в YA.__events
