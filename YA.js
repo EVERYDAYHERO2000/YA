@@ -16,7 +16,6 @@ YA.Element = function (proto, callback) {
   proto.namespace = proto.namespace || 'http://www.w3.org/1999/xhtml';
   proto.tag = proto.tag || 'div';
   proto.id = proto.id || 'elem_' + ++YA.__count;
-
   this.__proto = proto;
   this.__events = {};
   this.__id = proto.id;
@@ -266,7 +265,6 @@ YA.Block = function (proto, callback) {
   this.__proto = proto;
   this.__id = proto.id;
   this.elem = null;
-
   /**
    * Создаёт блок. Не доступна из конструктора. 
    * @param {object} ссылка на родителя
@@ -282,6 +280,7 @@ YA.Block = function (proto, callback) {
         namespace: proto[_elem].namespace || null,
         parent: parent || null,
         tag: proto[_elem].tag || null,
+        class: proto[_elem].class || null,
         attrs: proto[_elem].attrs || null,
         events: proto[_elem].events || null,
         content: _ifNode ? null : proto[_elem].content
@@ -333,13 +332,15 @@ YA.__ = function (proto, params, inner, callback) {
   var __proto = {};
 
   function copy(p) {
-    if (!YA.f.ifExist(p[key]), 'object') {
+    if (!YA.f.ifExist(p[key],'object') ) {
       for (var key in p) {
         __proto[key] = p[key];
       };
 
+
       for (var key in params) {
-        __proto[key] = params[key];
+         __proto[key] = params[key];
+        
       }
     } else {
       copy(p[key]);
