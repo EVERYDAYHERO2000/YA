@@ -29,7 +29,10 @@
       class: ['blockname__link'],
       content: 'Ссылка',
       attrs: {
-        href: 'http://site.com'
+        href: 'http://site.com',
+        style : {
+          fontFamily : 'sans-serif'
+        }
       }
     }
 
@@ -44,6 +47,33 @@
           YA.__(link, { attrs: { href: 'http://newsite.com' } })
         ])
       ]
-    })
+    });
+    
+    new YA.Document({
+      parent: document.body,
+      content: 
+        function(){
+          var arr = [];
+          for (var i = 0; i<100; i++){
+            arr.push({
+              content : 'Element ' + i,
+              attrs : {
+                style : {
+                  padding : '10px',
+                  borderRadius : '10px',
+                  background : 'red',
+                  margin : '10px',
+                  display : 'inline-block',
+                  transform : 'rotateZ('+ i * 2 + 'deg)',
+                  fontFamily : 'sans-serif' 
+                }
+              }
+            });
+          }
+          return arr;
+        }()
+      
+    });
+    
   </script>
 </body>
