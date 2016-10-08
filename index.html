@@ -7,107 +7,42 @@
 <body>
   <script src="YA.js"></script>
   <script>
-    new YA.Element({
-      parent: document.body,
-      content: 'Hello world!',
-      class: ['block', 'dfdfd'],
-      attrs: {
-        style: {
-          fontFamily: 'sans-serif',
-          background: 'black',
-          color: '#fff',
-          padding: '10px'
+    var block = {
+    tag : 'div',
+    class : ['blockname','blockname_mix'],
+    attrs : {
+        style : {
+            background : '#000000',
+            color : '#ffffff',
+            padding : '50px'
         }
-      },
-      events: {
-        click: function (e) {
-          console.log(e)
-        }
-      }
-    }, function(e){
-      console.log(e)
-    });
-
-    new YA.Element({
-      parent : YA.__elems[0].elem(),
-      tag : 'text',
-      content : '!!!!!!'
-    });
-
-    new YA.Block({
-      parent: document.body,
-      content: [
-        {
-          content: [{
-
-            content: 'dddd'
-          }, new YA.Element({
-              content: 'dddddd',
-              attrs: {
-                style: {
-                  background: 'red'
-                }
-              }
-            }).__proto, {
-
-            content: 'Element 2'
-          }, {
-
-            content: 'Element 3'
-          }, {
-            tag: 'span',
-            content: 'Element link',
-            attrs: {},
-            events: {
-              click: function (e) {
-                console.log(this)
-              }
-            }
-          }],
-          attrs: {
-            style: {
-              fontFamily: 'sans-serif',
-              margin: '20px 0 0 0'
-            }
-          }
-      }]
-    })
-    
-    new YA.Block({
-      parent: document.body,
-      content: function(){
-        var arr = [];
-        for (var i=0; i < 10; i++){
-          arr.push({
-            content : i,
-            events : {
-              click : function(e){
-                console.log(e.target)
-              }
-            }
-          });
-        }
-        return arr;
-      }()
-    })
-    
-    var blockname = {
-      tag : 'div',
-      content : '!!!!!!'
+    },
+    events : {
+        'click' : function(e){}
     }
-    
-    new YA.Document({
-      parent: document.body,
-      content:[
-        YA.__(blockname,{}, [
-          YA.__(blockname,{})
+}
+
+var link = {
+  tag : 'a',
+  class : ['blockname__link'],
+  content : 'Ссылка',
+  attrs : {
+      href : 'http://site.com'
+  }
+}
+
+new YA.Document({
+    parent: document.body,
+    content:[
+        YA.__(block,{}, [
+            YA.__(link,{})
         ]),
-        YA.__(blockname,{}),
-        YA.__(blockname,{}, [
-          YA.__(blockname,{})
+        YA.__(block, {}),
+        YA.__(block,{}, [
+            YA.__(link,{attrs: { href : 'http://newsite.com' } })
         ])
-      ]
-    })
+    ]
+})
     
   </script>
 </body>

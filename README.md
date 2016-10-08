@@ -1,5 +1,12 @@
+<<<<<<< Updated upstream
 # YA
 Шаблонизатор html
+=======
+# YA 
+Шаблонизатор html
+
+### Описание
+>>>>>>> Stashed changes
 
 ### Описание
 Объявление шаблонов:
@@ -10,7 +17,8 @@
         attrs : {
             style : {
                 background : '#000000',
-                color : '#ffffff'
+                color : '#ffffff',
+                padding : '50px' 
             }
         },
         events : {
@@ -35,7 +43,7 @@
             YA.__(block,{}, [
                 YA.__(link,{})
             ]),
-            YA.__(block, {attrs: { style : { margin:'50px' } } }),
+            YA.__(block, {}),
             YA.__(block,{}, [
                 YA.__(link,{attrs: { href : 'http://newsite.com' } })
             ])
