@@ -4,6 +4,7 @@ var YA = window.YA || {};
 YA.__elems = [];
 YA.__events = [];
 YA.__blocks = [];
+YA.__count = 0;
 
 /**
  * Создает Элемент. Если задан proto.parent добавляет объект в массив YA.__elems и создаёт DOM элемент в родителе.
@@ -14,6 +15,7 @@ YA.__blocks = [];
 YA.Element = function (proto, callback) {
   proto.namespace = proto.namespace || 'http://www.w3.org/1999/xhtml';
   proto.tag = proto.tag || 'div';
+  proto.id = proto.id || 'elem_' + ++YA.__count;
 
   this.__proto = proto;
   this.__events = {};
@@ -94,7 +96,7 @@ YA.Element = function (proto, callback) {
       proto.class = (YA.f.ifExist(proto.class, 'string')) ? [proto.class] : proto.class;
 
       if (!proto.class) proto.class = [];
-      
+
       proto.class = function (arr) {
         var obj = {};
 
@@ -168,7 +170,14 @@ YA.Element = function (proto, callback) {
     return proto.attrs;
   }
 
-  this.events = function (e, f) {
+  /**
+   * C аргументом устанавливает новое событие, без аргумента возвращает массив с событиями.
+   * @param   {string}   e        название события
+   * @param   {function} f        функция
+   * @param   {function} callback получает в качестве аргумента функцию события
+   * @returns {Array}    Массив с событиями
+   */
+  this.events = function (e, f, callback) {
     if (f) {
       proto.elem.addEventListener(e, f);
       _this.__events[e] = f;
@@ -178,6 +187,7 @@ YA.Element = function (proto, callback) {
         f: f
       });
     }
+    if (callback) callback(f);
     return _this.__events;
   };
 
@@ -234,11 +244,11 @@ YA.Element = function (proto, callback) {
     if (YA.f.ifHtml(proto.parent)) {
       proto.parent = (YA.f.ifMatch(proto.parent.nodeName, '#text')) ? proto.parent.parentNode : proto.parent;
       proto.parent.appendChild(proto.elem);
-      YA.__elems.push(_this);
     }
   }
 
   create();
+  YA.__elems.push(_this);
   if (callback) callback(this);
   return this;
 }
@@ -250,6 +260,8 @@ YA.Element = function (proto, callback) {
  * @returns {object} возвращает объект
  */
 YA.Block = function (proto, callback) {
+  proto.id = proto.id || 'block_' + ++YA.__count;
+
   var _this = this;
   this.__proto = proto;
   this.__id = proto.id;
@@ -312,6 +324,43 @@ YA.Block = function (proto, callback) {
   if (callback) callback(this);
   return this;
 
+}
+
+
+YA.Document = YA.Block;
+
+YA.__ = function (proto, params, inner, callback) {
+  var __proto = {};
+
+  function copy(p) {
+    if (!YA.f.ifExist(p[key]), 'object') {
+      for (var key in p) {
+        __proto[key] = p[key];
+      };
+
+      for (var key in params) {
+        __proto[key] = params[key];
+      }
+    } else {
+      copy(p[key]);
+    }
+  };
+
+  copy(proto);
+
+  if (inner) {
+    var newContent = [];
+    newContent.push({
+      content: __proto.content
+    });
+    for (var i = 0; i < inner.length; i++) {
+      newContent.push(inner[i]);
+    }
+    __proto.content = newContent;
+  }
+
+  if (callback) callback();
+  return __proto;
 }
 
 YA.f = {};

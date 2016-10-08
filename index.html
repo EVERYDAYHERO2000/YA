@@ -91,6 +91,23 @@
       }()
     })
     
+    var blockname = {
+      tag : 'div',
+      content : '!!!!!!'
+    }
+    
+    new YA.Document({
+      parent: document.body,
+      content:[
+        YA.__(blockname,{}, [
+          YA.__(blockname,{})
+        ]),
+        YA.__(blockname,{}),
+        YA.__(blockname,{}, [
+          YA.__(blockname,{})
+        ])
+      ]
+    })
     
   </script>
 </body>
