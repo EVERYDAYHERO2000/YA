@@ -329,31 +329,26 @@ YA.Block = function (proto, callback) {
 YA.Document = YA.Block;
 
 YA.__ = function (proto, params, inner, callback) {
-  var __proto = {};
+  var __proto = YA.f.cloner.clone(proto);
 
-  function copy(p) {
-    if (!YA.f.ifExist(p[key],'object') ) {
-      for (var key in p) {
-        __proto[key] = p[key];
-      };
-
-
-      for (var key in params) {
-         __proto[key] = params[key];
-        
+  function replace(proto, params) {
+    for (var keyA in proto){
+      for (var keyB in params){
+        if (keyA === keyB){
+          if (YA.f.ifExist(params[keyB],'object') && !Array.isArray(params[keyB])){
+            replace(proto[keyA], params[keyB]);
+          } else {
+            proto[keyA] = params[keyB];
+          }
+        }
       }
-    } else {
-      copy(p[key]);
     }
   };
-
-  copy(proto);
+  replace(__proto, params);
 
   if (inner) {
     var newContent = [];
-    newContent.push({
-      content: __proto.content
-    });
+    if (__proto.content) newContent.push({ content: __proto.content});
     for (var i = 0; i < inner.length; i++) {
       newContent.push(inner[i]);
     }
@@ -402,4 +397,31 @@ YA.f.ifMatch = function (a, b) {
 YA.f.ifExist = function (str, type) {
 
   return (str === undefined || str === null) ? false : ((type !== undefined) ? (typeof str === type) : true);
+};
+
+YA.f.cloner = {
+    _clone: function _clone(obj) {
+        if (obj instanceof Array) {
+            var out = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                var value = obj[i];
+                out[i] = (value !== null && typeof value === "object") ? _clone(value) : value;
+            }
+        } else {
+            var out = {};
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    var value = obj[key];
+                    out[key] = (value !== null && typeof value === "object") ? _clone(value) : value;
+                }
+            }
+        }
+        return out;
+    },
+
+    clone: function(it) {
+        return this._clone({
+        it: it
+        }).it;
+    }
 };

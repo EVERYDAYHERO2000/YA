@@ -8,41 +8,42 @@
   <script src="YA.js"></script>
   <script>
     var block = {
-    tag : 'div',
-    class : ['blockname','blockname_mix'],
-    attrs : {
-        style : {
-            background : '#000000',
-            color : '#ffffff',
-            padding : '50px'
+      tag: 'div',
+      class: ['blockname', 'blockname_mix'],
+      attrs: {
+        style: {
+          background: '#000000',
+          color: '#ffffff',
+          padding: '50px'
         }
-    },
-    events : {
-        'click' : function(e){}
+      },
+      events: {
+        'click': function (e) {
+          console.log(e);
+        }
+      }
     }
-}
 
-var link = {
-  tag : 'a',
-  class : ['blockname__link'],
-  content : 'Ссылка',
-  attrs : {
-      href : 'http://site.com'
-  }
-}
+    var link = {
+      tag: 'a',
+      class: ['blockname__link'],
+      content: 'Ссылка',
+      attrs: {
+        href: 'http://site.com'
+      }
+    }
 
-new YA.Document({
-    parent: document.body,
-    content:[
-        YA.__(block,{}, [
-            YA.__(link,{})
+    new YA.Document({
+      parent: document.body,
+      content: [
+        YA.__(block, {}, [
+          YA.__(link, {})
         ]),
-        YA.__(block, {attrs: {style : {background: 'red'}}}),
-        YA.__(block,{}, [
-            YA.__(link,{attrs: { href : 'http://newsite.com' } })
+        YA.__(block, { attrs: { style: { background: 'red' } } }),
+        YA.__(block, {}, [
+          YA.__(link, { attrs: { href: 'http://newsite.com' } })
         ])
-    ]
-})
-    
+      ]
+    })
   </script>
 </body>
