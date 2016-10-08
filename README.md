@@ -62,9 +62,7 @@
     
 Элементы доступны в массиве YA.__elems а вся конструкция в массиве YA.__block. Все события доступны в YA.__events
 
-Аргументы: 
-
-    new YA.Document(proto, mix, inner, callback);
+Аргументы функции подстановки шаблона YA.__(proto, mix, inner, callback);
     
 **proto** {object} прототип
 
