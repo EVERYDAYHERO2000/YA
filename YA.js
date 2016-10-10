@@ -248,7 +248,7 @@ YA.Element = function (proto, callback) {
 
   create();
   YA.__elems.push(_this);
-  if (this.__proto.callback) this.__proto.callback(this);
+  if (this.__proto.callback) this.__proto.callback(this);   
   if (callback) callback(this);
   return this;
 }
