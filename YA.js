@@ -248,6 +248,7 @@ YA.Element = function (proto, callback) {
 
   create();
   YA.__elems.push(_this);
+  if (this.__proto.callback) this.__proto.callback(this);
   if (callback) callback(this);
   return this;
 }
@@ -283,7 +284,8 @@ YA.Block = function (proto, callback) {
         class: proto[_elem].class || null,
         attrs: proto[_elem].attrs || null,
         events: proto[_elem].events || null,
-        content: _ifNode ? null : proto[_elem].content
+        content: _ifNode ? null : proto[_elem].content,
+        callback : proto[_elem].callback || function(){}
       });
 
       proto[_elem].elem = element.elem();
