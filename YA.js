@@ -355,7 +355,7 @@ YA.__ = function (proto, params, inner, callback) {
     __proto.content = newContent;
   }
 
-  if (callback) callback();
+  if (callback) callback(__proto);
   return __proto;
 }
 
