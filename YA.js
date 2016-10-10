@@ -282,6 +282,7 @@ YA.Block = function (proto, callback) {
       var element = new YA.Element({
         namespace: proto[_elem].namespace || null,
         parent: parent || null,
+		id : proto[_elem].id || null,  
         tag: proto[_elem].tag || null,
         class: proto[_elem].class || null,
         attrs: proto[_elem].attrs || null,
@@ -291,7 +292,9 @@ YA.Block = function (proto, callback) {
       });
 
       proto[_elem].elem = element.elem();
-      if (!_this.elem) _this.elem = element.elem;
+      if (!_this.elem) {
+		  _this.elem = element.elem;
+	  }
 
       if (_ifNode) create(element.elem(), proto[_elem].content);
       
