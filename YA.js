@@ -354,6 +354,7 @@ YA.__ = function (proto, params, inner, callback) {
             replace(proto[keyA], params[keyB]);
           } else {
             proto[keyA] = params[keyB];
+			 console.log(keyB,params[keyB]); 
           }
         }
       }
