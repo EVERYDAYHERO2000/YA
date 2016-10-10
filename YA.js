@@ -347,16 +347,13 @@ YA.__ = function (proto, params, inner, callback) {
   var __proto = YA.f.cloner.clone(proto);
 
   function replace(proto, params) {
-	  console.log(params)
-    for (var keyA in proto){
-		
-      for (var keyB in params){
+    for (var keyA in params){
+      for (var keyB in proto){
         if (keyA === keyB){
-          if (YA.f.ifExist(params[keyB],'object') && !Array.isArray(params[keyB])){
-            replace(proto[keyA], params[keyB]);
+          if (YA.f.ifExist(params[keyA],'object') && !Array.isArray(params[keyA])){
+            replace(proto[keyB], params[keyA]);
           } else {
-            proto[keyA] = params[keyB];
-			 console.log(keyB,params[keyB]); 
+            proto[keyB] = params[keyA]; 
           }
         }
       }
