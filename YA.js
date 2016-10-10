@@ -290,7 +290,7 @@ YA.Block = function (proto, callback) {
         content: _ifNode ? null : proto[_elem].content,
         callback : proto[_elem].callback || function(){}
       });
-	console.log(proto[_elem].id)	
+		
       proto[_elem].elem = element.elem();
       if (!_this.elem) {
 		  _this.elem = element.elem;
