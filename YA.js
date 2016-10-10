@@ -440,3 +440,13 @@ YA.f.cloner = {
         }).it;
     }
 };
+
+YA.loadData = function(url, mimetype, callback) {
+	var xobj = new XMLHttpRequest();
+	xobj.overrideMimeType(mimetype);
+	xobj.open('GET', url, true);
+	xobj.onreadystatechange = function () {
+		if (xobj.readyState == 4 && xobj.status == "200") callback(xobj.responseText);
+	};
+	xobj.send(null);
+}
