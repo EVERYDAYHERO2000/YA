@@ -348,6 +348,7 @@ YA.__ = function (proto, params, inner, callback) {
 
   function replace(proto, params) {
     for (var keyA in proto){
+		console.log('---',keyA,params[keyA])
       for (var keyB in params){
         if (keyA === keyB){
           if (YA.f.ifExist(params[keyB],'object') && !Array.isArray(params[keyB])){
