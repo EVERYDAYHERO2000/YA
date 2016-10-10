@@ -247,8 +247,7 @@ YA.Element = function (proto, callback) {
   }
 
   create();
-  YA.__elems.push(_this);
-  if (this.__proto.callback) this.__proto.callback(this);   
+  YA.__elems.push(_this);  
   if (callback) callback(this);
   return this;
 }
@@ -266,6 +265,9 @@ YA.Block = function (proto, callback) {
   this.__proto = proto;
   this.__id = proto.id;
   this.elem = null;
+  
+  var elems = [];
+  
   /**
    * Создаёт блок. Не доступна из конструктора. 
    * @param {object} ссылка на родителя
@@ -292,6 +294,8 @@ YA.Block = function (proto, callback) {
       if (!_this.elem) _this.elem = element.elem;
 
       if (_ifNode) create(element.elem(), proto[_elem].content);
+      
+      elems.push(element);
     }
 
   }
@@ -322,6 +326,12 @@ YA.Block = function (proto, callback) {
 
   create(proto.parent, proto.content);
   YA.__blocks.push(this);
+  
+  //
+  for (var i = 0; i < elems.length; i++){
+    if (elems[i].__proto.callback) elems[i].__proto.callback(elems[i]); 
+  }
+  
   if (callback) callback(this);
   return this;
 
