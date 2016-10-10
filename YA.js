@@ -15,7 +15,6 @@ YA.__count = 0;
 YA.Element = function (proto, callback) {
   proto.namespace = proto.namespace || 'http://www.w3.org/1999/xhtml';
   proto.tag = proto.tag || 'div';
-	console.log(proto.id)
   proto.id = proto.id || 'elem_' + ++YA.__count;
   this.__proto = proto;
   this.__events = {};
@@ -291,7 +290,7 @@ YA.Block = function (proto, callback) {
         content: _ifNode ? null : proto[_elem].content,
         callback : proto[_elem].callback || function(){}
       });
-
+	console.log(proto[_elem].id)	
       proto[_elem].elem = element.elem();
       if (!_this.elem) {
 		  _this.elem = element.elem;
