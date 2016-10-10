@@ -278,7 +278,7 @@ YA.Block = function (proto, callback) {
     for (var _elem = 0; _elem < proto.length; _elem++) {
 
       var _ifNode = YA.f.ifExist(proto[_elem].content, 'object');
-
+	console.log(proto[_elem].id)	
       var element = new YA.Element({
         namespace: proto[_elem].namespace || null,
         parent: parent || null,
