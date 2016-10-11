@@ -176,7 +176,7 @@ YA.Element = function (proto, callback) {
    * @param   {function} callback получает в качестве аргумента функцию события
    * @returns {Array}    Массив с событиями
    */
-  this.events = function (e, f, _this, callback) {
+  this.events = function (e, f, callback) {
     if (f) {
       proto.elem.addEventListener(e, f);
       _this.__events[e] = f;
@@ -236,7 +236,7 @@ YA.Element = function (proto, callback) {
       _this.class(proto.class);
 
       for (var _event in proto.events) {
-        _this.events(_event, proto.events[_event], _this)
+        _this.events(_event, proto.events[_event])
       }
     }
 
